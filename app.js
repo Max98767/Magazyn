@@ -36,8 +36,6 @@ function init() {
   bindCustomSelect();
   renderRecent();
 
-  // Seed demo data if empty
-  if (state.log.length === 0) seedDemo();
 }
 
 function loadFromStorage() {
@@ -47,9 +45,6 @@ function loadFromStorage() {
   const cfg = localStorage.getItem('magsys_settings');
   if (cfg) state.settings = { ...state.settings, ...JSON.parse(cfg) };
 
-  // Restore last technician
-  const lastWho = localStorage.getItem('magsys_lastWho');
-  if (lastWho) document.getElementById('fWho').value = lastWho;
 }
 
 function saveLog() {
@@ -229,8 +224,6 @@ function submitForm() {
 
   state.log.unshift(entry);
   saveLog();
-  localStorage.setItem('magsys_lastWho', kto);
-
   toast(`✓ ${akcja} — ${sn}`, 'ok');
   renderRecent();
 
@@ -410,6 +403,14 @@ function saveUrzadzenia() {
   toast('Urządzenia zapisane', 'ok');
 }
 
+function clearHistory() {
+  if (!confirm('Na pewno wyczyścić całą historię? Tej operacji nie można cofnąć.')) return;
+  state.log = [];
+  saveLog();
+  renderRecent();
+  toast('Historia wyczyszczona', 'ok');
+}
+
 function saveKategorie() {
   state.settings.kategorie = document.getElementById('sKategorie').value
     .split('\n').map(s => s.trim()).filter(Boolean);
@@ -480,26 +481,6 @@ function toast(msg, type = 'info') {
 function nowStr() {
   const d = new Date();
   return d.toISOString().slice(0, 16).replace('T', ' ');
-}
-
-// ─── DEMO SEED ────────────────────────────────────────
-function seedDemo() {
-  const entries = [
-    { akcja:'PRZYJĘCIE', sn:'BEAR-0001', kat:'Łożysko',  kto:'Piotr Nowak',      dev:'MAGAZYN', note:'dostawa INV-441', ts:'2025-04-18 08:14' },
-    { akcja:'PRZYJĘCIE', sn:'BEAR-0002', kat:'Łożysko',  kto:'Piotr Nowak',      dev:'MAGAZYN', note:'dostawa INV-441', ts:'2025-04-18 08:14' },
-    { akcja:'PRZYJĘCIE', sn:'BEAR-0003', kat:'Łożysko',  kto:'Piotr Nowak',      dev:'MAGAZYN', note:'',               ts:'2025-04-18 08:15' },
-    { akcja:'PRZYJĘCIE', sn:'PUMP-0011', kat:'Pompa',    kto:'Piotr Nowak',      dev:'MAGAZYN', note:'',               ts:'2025-04-18 08:20' },
-    { akcja:'PRZYJĘCIE', sn:'SEAL-0033', kat:'Uszczelka',kto:'Anna Nowak',       dev:'MAGAZYN', note:'',               ts:'2025-04-18 09:00' },
-    { akcja:'PRZYJĘCIE', sn:'FILT-0007', kat:'Filtr',    kto:'Anna Nowak',       dev:'MAGAZYN', note:'',               ts:'2025-04-18 09:05' },
-    { akcja:'POBIERZ',   sn:'BEAR-0001', kat:'Łożysko',  kto:'Marek Wiśniewski', dev:'LINIA-1', note:'',               ts:'2025-04-18 10:30' },
-    { akcja:'POBIERZ',   sn:'FILT-0007', kat:'Filtr',    kto:'Tomasz Zając',     dev:'LINIA-2', note:'wymiana planowa', ts:'2025-04-19 07:45' },
-    { akcja:'ZEPSUTA',   sn:'BEAR-0001', kat:'Łożysko',  kto:'Marek Wiśniewski', dev:'LINIA-1', note:'pęknięcie pierścienia', ts:'2025-04-19 10:00' },
-    { akcja:'WYMIANA',   sn:'BEAR-0002', kat:'Łożysko',  kto:'Marek Wiśniewski', dev:'LINIA-1', note:'w miejsce BEAR-0001', ts:'2025-04-19 10:15' },
-    { akcja:'POBIERZ',   sn:'PUMP-0011', kat:'Pompa',    kto:'Tomasz Zając',     dev:'LINIA-3', note:'',               ts:'2025-04-21 08:00' },
-    { akcja:'PRZEGLĄD',  sn:'SEAL-0033', kat:'Uszczelka',kto:'Anna Nowak',       dev:'LINIA-2', note:'stan dobry',     ts:'2025-04-21 11:30' },
-  ];
-  entries.forEach(e => state.log.push({ id: Date.now().toString(36), ...e }));
-  saveLog();
 }
 
 // ─── START ────────────────────────────────────────────

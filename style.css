@@ -408,6 +408,7 @@ textarea { resize: vertical; line-height: 1.6; }
   transition: opacity 0.15s; box-shadow: 0 2px 6px rgba(0,119,168,0.25);
 }
 .btn-save-settings:hover { opacity: 0.85; }
+.btn-save-settings.btn-danger { background: var(--red); box-shadow: 0 2px 6px rgba(192,57,43,0.25); }
 .conn-test { margin-top: 12px; font-family: var(--font-mono); font-size: 12px; color: var(--muted2); }
 
 .deploy-steps { display: flex; flex-direction: column; gap: 14px; }
