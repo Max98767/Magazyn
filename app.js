@@ -6,7 +6,15 @@ const KATEGORIE = [
   "Łożysko","Uszczelka","Pompa","Zawór","Silnik",
   "Przekładnia","Filtr","Czujnik","Sterownik",
   "Pasek napędowy","Sprężyna","Złączka","Wentylator",
-  "Transformator","Inne"
+  "Transformator",
+  "Czytnik kart A900","Czytnik kart A1000","Czytnik kart M1000",
+  "Czytnik kodów QR","Drukarka","Drukarka Stelio","Datapack",
+  "Ekran monochromatyczny","Kasa pośrednia",
+  "Modem","Płyta główna","Płytka zasilająca czytnik",
+  "Płytka zasilająca","Płytka do kabli czytnik",
+  "Panel górny","Panel dolny A1000","Panel dolny A900",
+  "Płytka pośrednia","Rak","Selektor","Zamek",
+  "Inne"
 ];
 
 const BADGE_CLASS = {
