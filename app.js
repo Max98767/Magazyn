@@ -3,10 +3,6 @@
 // ═══════════════════════════════════════════════════════
 
 const KATEGORIE = [
-  "Łożysko","Uszczelka","Pompa","Zawór","Silnik",
-  "Przekładnia","Filtr","Czujnik","Sterownik",
-  "Pasek napędowy","Sprężyna","Złączka","Wentylator",
-  "Transformator",
   "Czytnik kart A900","Czytnik kart A1000","Czytnik kart M1000",
   "Czytnik kodów QR","Drukarka","Drukarka Stelio","Datapack",
   "Ekran monochromatyczny","Kasa pośrednia",
