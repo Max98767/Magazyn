@@ -15,7 +15,7 @@ const KATEGORIE = [
 
 const BADGE_CLASS = {
   'POBIERZ': 'b-pobierz', 'ZWROT': 'b-zwrot', 'ZEPSUTA': 'b-zepsuta',
-  'WYMIANA': 'b-wymiana', 'PRZYJĘCIE': 'b-przyjecie', 'PRZEGLĄD': 'b-przeglad'
+  'WYMIANA': 'b-wymiana', 'PRZYJĘCIE': 'b-przyjecie'
 };
 
 // ─── STATE ────────────────────────────────────────────
@@ -293,7 +293,7 @@ function renderStock() {
     const k = snKat[sn] || 'Inne';
     if (!cats[k]) cats[k] = { stock: 0, inDev: 0, broken: 0 };
     if (['PRZYJĘCIE','ZWROT'].includes(st)) cats[k].stock++;
-    else if (['POBIERZ','WYMIANA','PRZEGLĄD'].includes(st)) cats[k].inDev++;
+    else if (['POBIERZ','WYMIANA'].includes(st)) cats[k].inDev++;
     else if (st === 'ZEPSUTA') cats[k].broken++;
   });
 
