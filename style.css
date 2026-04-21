@@ -1,20 +1,20 @@
 :root {
-  --bg: #0c0c0c;
-  --surface: #141414;
-  --surface2: #1c1c1c;
-  --surface3: #242424;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.12);
-  --text: #e8e6df;
-  --muted: #5a5a52;
-  --muted2: #888880;
+  --bg: #ffffff;
+  --surface: #f5f5f5;
+  --surface2: #ebebeb;
+  --surface3: #e0e0e0;
+  --border: rgba(0,0,0,0.1);
+  --border2: rgba(0,0,0,0.18);
+  --text: #111111;
+  --muted: #999999;
+  --muted2: #555555;
 
-  --cyan: #3dd6f5;
-  --green: #3dffa0;
-  --red: #ff4d4d;
-  --orange: #ff8c42;
-  --yellow: #f5e642;
-  --purple: #b06eff;
+  --cyan: #0099bb;
+  --green: #00aa55;
+  --red: #dd2222;
+  --orange: #dd6600;
+  --yellow: #cc9900;
+  --purple: #7733cc;
 
   --font-display: 'Syne', sans-serif;
   --font-mono: 'Syne Mono', monospace;
@@ -43,7 +43,7 @@ body {
 header {
   position: sticky; top: 0; z-index: 100;
   height: 52px;
-  background: rgba(12,12,12,0.92);
+  background: rgba(255,255,255,0.95);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center;
@@ -120,7 +120,7 @@ header {
   opacity: 0; transition: opacity 0.15s;
 }
 .act-btn:hover { border-color: var(--border2); color: var(--text); }
-.act-btn:hover::before { opacity: 0.04; background: white; }
+.act-btn:hover::before { opacity: 0.04; background: black; }
 
 .act-icon {
   font-size: 18px; line-height: 1;
@@ -134,12 +134,12 @@ header {
 .act-sub { font-size: 9px; color: var(--muted); }
 
 /* Selected states */
-.act-btn.sel-cyan   { border-color: var(--cyan);   color: var(--cyan);   background: rgba(61,214,245,0.07); }
-.act-btn.sel-green  { border-color: var(--green);  color: var(--green);  background: rgba(61,255,160,0.07); }
-.act-btn.sel-red    { border-color: var(--red);    color: var(--red);    background: rgba(255,77,77,0.07); }
-.act-btn.sel-orange { border-color: var(--orange); color: var(--orange); background: rgba(255,140,66,0.07); }
-.act-btn.sel-yellow { border-color: var(--yellow); color: var(--yellow); background: rgba(245,230,66,0.07); }
-.act-btn.sel-purple { border-color: var(--purple); color: var(--purple); background: rgba(176,110,255,0.07); }
+.act-btn.sel-cyan   { border-color: var(--cyan);   color: var(--cyan);   background: rgba(0,153,187,0.08); }
+.act-btn.sel-green  { border-color: var(--green);  color: var(--green);  background: rgba(0,170,85,0.08); }
+.act-btn.sel-red    { border-color: var(--red);    color: var(--red);    background: rgba(221,34,34,0.08); }
+.act-btn.sel-orange { border-color: var(--orange); color: var(--orange); background: rgba(221,102,0,0.08); }
+.act-btn.sel-yellow { border-color: var(--yellow); color: var(--yellow); background: rgba(204,153,0,0.08); }
+.act-btn.sel-purple { border-color: var(--purple); color: var(--purple); background: rgba(119,51,204,0.08); }
 .act-btn.sel-cyan .act-icon,
 .act-btn.sel-green .act-icon,
 .act-btn.sel-red .act-icon,
@@ -223,7 +223,7 @@ textarea { resize: vertical; line-height: 1.5; }
   background: var(--surface2); border: 1px solid var(--border2);
   border-radius: 4px; z-index: 50;
   display: none; max-height: 220px; overflow-y: auto;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.15);
 }
 .custom-select.open .cs-dropdown { display: block; }
 .cs-opt {
@@ -243,7 +243,7 @@ textarea { resize: vertical; line-height: 1.5; }
 }
 .btn-submit {
   display: flex; align-items: center; gap: 10px;
-  background: var(--yellow); color: #0c0c0c;
+  background: var(--yellow); color: #ffffff;
   font-family: var(--font-mono); font-size: 12px; font-weight: 400;
   letter-spacing: 0.1em; border: none;
   padding: 11px 24px; border-radius: 4px; cursor: pointer;
@@ -292,12 +292,12 @@ textarea { resize: vertical; line-height: 1.5; }
   font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em;
   padding: 3px 7px; border-radius: 2px; white-space: nowrap; display: inline-block;
 }
-.b-pobierz  { background: rgba(61,214,245,0.1);  color: var(--cyan); }
-.b-zwrot    { background: rgba(61,255,160,0.1);  color: var(--green); }
-.b-zepsuta  { background: rgba(255,77,77,0.1);   color: var(--red); }
-.b-wymiana  { background: rgba(255,140,66,0.1);  color: var(--orange); }
-.b-przyjecie{ background: rgba(245,230,66,0.1);  color: var(--yellow); }
-.b-przeglad { background: rgba(176,110,255,0.1); color: var(--purple); }
+.b-pobierz  { background: rgba(0,153,187,0.1);  color: var(--cyan); }
+.b-zwrot    { background: rgba(0,170,85,0.1);   color: var(--green); }
+.b-zepsuta  { background: rgba(221,34,34,0.1);  color: var(--red); }
+.b-wymiana  { background: rgba(221,102,0,0.1);  color: var(--orange); }
+.b-przyjecie{ background: rgba(204,153,0,0.1);  color: var(--yellow); }
+.b-przeglad { background: rgba(119,51,204,0.1); color: var(--purple); }
 
 /* ── FILTER BAR ──────────────────────────────────── */
 .filter-bar {
@@ -342,7 +342,7 @@ textarea { resize: vertical; line-height: 1.5; }
   padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.03);
   vertical-align: middle; white-space: nowrap;
 }
-.data-table tr:hover td { background: rgba(255,255,255,0.015); }
+.data-table tr:hover td { background: rgba(0,0,0,0.03); }
 .td-time { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
 .td-sn { font-family: var(--font-mono); font-size: 11px; color: var(--cyan); }
 .td-who { color: var(--muted2); }
@@ -390,7 +390,7 @@ textarea { resize: vertical; line-height: 1.5; }
 }
 .btn-save-settings {
   font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
-  color: #0c0c0c; background: var(--yellow); border: none;
+  color: #ffffff; background: var(--yellow); border: none;
   padding: 10px 20px; border-radius: 4px; cursor: pointer;
   transition: opacity 0.15s;
 }
@@ -417,7 +417,7 @@ textarea { resize: vertical; line-height: 1.5; }
   background: var(--surface2); border: 1px solid var(--border2);
   padding: 10px 18px; border-radius: 4px; white-space: nowrap;
   animation: toastIn 0.25s cubic-bezier(0.34,1.56,0.64,1) forwards;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
 }
 .toast.ok   { border-left: 2px solid var(--green); }
 .toast.err  { border-left: 2px solid var(--red); }
