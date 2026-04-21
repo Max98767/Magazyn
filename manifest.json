@@ -1,0 +1,12 @@
+{
+  "name": "MAG//SYS — Serwis Magazynowy",
+  "short_name": "MAG//SYS",
+  "description": "System zarządzania magazynem serwisowym",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#1a2332",
+  "theme_color": "#1a2332",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

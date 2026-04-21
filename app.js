@@ -269,7 +269,7 @@ function renderRecent() {
   list.innerHTML = recent.map(r => `
     <div class="recent-item">
       <span class="ri-time">${r.ts.slice(11,16)}</span>
-      ${renderBadges(r.akcja)}
+      <span class="ri-badges">${renderBadges(r.akcja)}</span>
       <span class="ri-sn">${r.sn}</span>
       <span class="ri-who">${r.kto}</span>
       <span class="ri-dev">${r.dev || '—'}</span>
