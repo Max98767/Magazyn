@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MAG//SYS — Serwis Magazynowy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header>
+  <div class="logo">MAG<span class="slash">//</span>SYS</div>
+  <div class="header-center" id="syncStatus">
+    <span class="dot"></span>
+    <span class="sync-text">LOKALNIE</span>
+  </div>
+  <nav class="header-nav">
+    <button class="nav-btn active" data-page="transakcja">TRANSAKCJA</button>
+    <button class="nav-btn" data-page="historia">HISTORIA</button>
+    <button class="nav-btn" data-page="magazyn">MAGAZYN</button>
+    <button class="nav-btn" data-page="ustawienia">⚙</button>
+  </nav>
+</header>
+
+<div class="page-wrap">
+
+  <!-- ══════════════════ TRANSAKCJA ══════════════════ -->
+  <section class="page active" id="page-transakcja">
+    <div class="page-inner">
+
+      <div class="action-strip" id="actionStrip">
+        <button class="act-btn" data-action="POBIERZ" data-color="cyan">
+          <span class="act-icon">↓</span>
+          <span class="act-label">POBIERZ</span>
+          <span class="act-sub">stock → urządz.</span>
+        </button>
+        <button class="act-btn" data-action="ZWROT" data-color="green">
+          <span class="act-icon">↑</span>
+          <span class="act-label">ZWROT</span>
+          <span class="act-sub">urządz. → stock</span>
+        </button>
+        <button class="act-btn" data-action="ZEPSUTA" data-color="red">
+          <span class="act-icon">✕</span>
+          <span class="act-label">ZEPSUTA</span>
+          <span class="act-sub">oznacz defekt</span>
+        </button>
+        <button class="act-btn" data-action="WYMIANA" data-color="orange">
+          <span class="act-icon">⇄</span>
+          <span class="act-label">WYMIANA</span>
+          <span class="act-sub">stara → nowa</span>
+        </button>
+        <button class="act-btn" data-action="PRZYJĘCIE" data-color="yellow">
+          <span class="act-icon">+</span>
+          <span class="act-label">PRZYJĘCIE</span>
+          <span class="act-sub">nowe do stocku</span>
+        </button>
+        <button class="act-btn" data-action="PRZEGLĄD" data-color="purple">
+          <span class="act-icon">◎</span>
+          <span class="act-label">PRZEGLĄD</span>
+          <span class="act-sub">inspekcja</span>
+        </button>
+      </div>
+
+      <form class="main-form" id="mainForm" autocomplete="off">
+        <div class="form-selected-action" id="formSelectedAction">
+          <span class="fsa-label">Wybierz akcję powyżej</span>
+        </div>
+
+        <div class="fields-grid">
+          <div class="field-group span2">
+            <label>NUMER SERYJNY <span class="req">*</span></label>
+            <input type="text" id="fSN" placeholder="np. BEAR-0042" spellcheck="false">
+          </div>
+
+          <div class="field-group">
+            <label>KATEGORIA <span class="req">*</span></label>
+            <div class="custom-select" id="katSelect">
+              <div class="cs-trigger" id="kaTrigger">
+                <span id="katVal">— wybierz —</span>
+                <span class="cs-arrow">▾</span>
+              </div>
+              <div class="cs-dropdown" id="katDropdown"></div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>TECHNIK <span class="req">*</span></label>
+            <input type="text" id="fWho" placeholder="Imię i nazwisko" list="technicyList">
+            <datalist id="technicyList"></datalist>
+          </div>
+
+          <div class="field-group span2">
+            <label>URZĄDZENIE / LOKALIZACJA</label>
+            <input type="text" id="fDev" placeholder="np. LINIA-3 lub MAGAZYN" list="urzadzeniaList">
+            <datalist id="urzadzeniaList"></datalist>
+          </div>
+
+          <div class="field-group span2">
+            <label>UWAGI</label>
+            <textarea id="fNote" placeholder="Opcjonalny opis..." rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-submit" id="btnSubmit" disabled>
+            <span class="btn-submit-text">ZAPISZ</span>
+            <span class="btn-submit-icon">→</span>
+          </button>
+          <button type="button" class="btn-clear" onclick="clearForm()">WYCZYŚĆ</button>
+        </div>
+      </form>
+
+      <div class="recent-strip" id="recentStrip">
+        <div class="recent-title">OSTATNIE</div>
+        <div class="recent-list" id="recentList"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════ HISTORIA ══════════════════ -->
+  <section class="page" id="page-historia">
+    <div class="page-inner">
+      <div class="filter-bar">
+        <input class="filter-input" type="text" id="filterQ" placeholder="Szukaj: SN, technik, urządzenie..." oninput="renderHistory()">
+        <select class="filter-sel" id="filterAkcja" onchange="renderHistory()">
+          <option value="">Wszystkie akcje</option>
+          <option>POBIERZ</option><option>ZWROT</option><option>ZEPSUTA</option>
+          <option>WYMIANA</option><option>PRZYJĘCIE</option><option>PRZEGLĄD</option>
+        </select>
+        <select class="filter-sel" id="filterKat" onchange="renderHistory()">
+          <option value="">Wszystkie kategorie</option>
+        </select>
+        <button class="btn-export" onclick="exportCSV()">↓ CSV</button>
+      </div>
+      <div class="hist-count" id="histCount"></div>
+      <div class="table-scroll">
+        <table class="data-table" id="histTable">
+          <thead>
+            <tr>
+              <th>CZAS</th><th>AKCJA</th><th>NR SERYJNY</th><th>KATEGORIA</th>
+              <th>TECHNIK</th><th>URZĄDZENIE</th><th>UWAGI</th>
+            </tr>
+          </thead>
+          <tbody id="histBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ MAGAZYN ══════════════════ -->
+  <section class="page" id="page-magazyn">
+    <div class="page-inner">
+      <div class="kpi-row" id="kpiRow"></div>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>KATEGORIA</th>
+              <th>W STOCKU</th>
+              <th>W URZĄDZENIACH</th>
+              <th>ZEPSUTE</th>
+              <th>RAZEM</th>
+              <th>DOSTĘPNOŚĆ</th>
+            </tr>
+          </thead>
+          <tbody id="stockBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ USTAWIENIA ══════════════════ -->
+  <section class="page" id="page-ustawienia">
+    <div class="page-inner settings-page">
+
+      <div class="settings-block">
+        <h3>Połączenie z Google Sheets</h3>
+        <p class="settings-desc">Aplikacja zapisuje dane do Twojego arkusza przez Google Apps Script. Wklej URL webhooka po skonfigurowaniu skryptu.</p>
+        <div class="field-group">
+          <label>APPS SCRIPT WEBHOOK URL</label>
+          <input type="url" id="sWebhook" placeholder="https://script.google.com/macros/s/..." spellcheck="false">
+        </div>
+        <button class="btn-save-settings" onclick="saveSettings()">ZAPISZ POŁĄCZENIE</button>
+        <div class="conn-test" id="connTest"></div>
+      </div>
+
+      <div class="settings-block">
+        <h3>Technicy (autocomplete)</h3>
+        <p class="settings-desc">Dodaj imiona techników — pojawią się jako podpowiedzi w formularzu.</p>
+        <div class="field-group">
+          <label>TECHNICY (jeden na linię)</label>
+          <textarea id="sTechnicy" rows="5" placeholder="Jan Kowalski&#10;Anna Nowak&#10;Piotr Wiśniewski"></textarea>
+        </div>
+        <button class="btn-save-settings" onclick="saveTechnicy()">ZAPISZ</button>
+      </div>
+
+      <div class="settings-block">
+        <h3>Urządzenia / lokalizacje</h3>
+        <div class="field-group">
+          <label>URZĄDZENIA (jeden na linię)</label>
+          <textarea id="sUrzadzenia" rows="5" placeholder="LINIA-1&#10;LINIA-2&#10;LINIA-3&#10;MAGAZYN"></textarea>
+        </div>
+        <button class="btn-save-settings" onclick="saveUrzadzenia()">ZAPISZ</button>
+      </div>
+
+      <div class="settings-block">
+        <h3>Instrukcja wdrożenia</h3>
+        <div class="deploy-steps">
+          <div class="ds"><span class="ds-n">1</span><div>Otwórz <strong>Google Sheets</strong> → nowy arkusz</div></div>
+          <div class="ds"><span class="ds-n">2</span><div>Menu: <strong>Rozszerzenia → Apps Script</strong></div></div>
+          <div class="ds"><span class="ds-n">3</span><div>Wklej kod z pliku <code>apps-script.gs</code> (dołączony w paczce)</div></div>
+          <div class="ds"><span class="ds-n">4</span><div>Kliknij <strong>Wdróż → Nowe wdrożenie → Aplikacja internetowa</strong><br>Ustaw dostęp: <em>Wszyscy</em></div></div>
+          <div class="ds"><span class="ds-n">5</span><div>Skopiuj URL wdrożenia i wklej powyżej w polu Webhook URL</div></div>
+          <div class="ds"><span class="ds-n">6</span><div>Wrzuć pliki na <strong>GitHub Pages</strong> lub <strong>Netlify</strong> — gotowe!</div></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
