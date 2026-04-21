@@ -92,8 +92,13 @@
 
           <div class="field-group">
             <label>TECHNIK <span class="req">*</span></label>
-            <input type="text" id="fWho" placeholder="Imię i nazwisko" list="technicyList">
-            <datalist id="technicyList"></datalist>
+            <div class="custom-select" id="technikSelect">
+              <div class="cs-trigger" id="technikTrigger">
+                <span id="technikVal">— wybierz —</span>
+                <span class="cs-arrow">▾</span>
+              </div>
+              <div class="cs-dropdown" id="technikDropdown"></div>
+            </div>
           </div>
 
           <div class="field-group span2">

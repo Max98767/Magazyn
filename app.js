@@ -29,11 +29,13 @@ let state = {
 function init() {
   loadFromStorage();
   buildKatDropdown();
+  buildTechnikDropdown();
   buildAutocomplete();
   bindNavigation();
   bindActionButtons();
   bindForm();
   bindCustomSelect();
+  bindTechnikSelect();
   renderRecent();
 
 }
@@ -170,45 +172,73 @@ function bindCustomSelect() {
 
   document.addEventListener('click', () => {
     sel.classList.remove('open');
+    document.getElementById('technikSelect').classList.remove('open');
   });
 }
 
-// ─── AUTOCOMPLETE ─────────────────────────────────────
-function buildAutocomplete() {
-  const techList = document.getElementById('technicyList');
-  const devList = document.getElementById('urzadzeniaList');
+// ─── TECHNICY DROPDOWN ────────────────────────────────
+let selectedTechnik = '';
 
-  const technicy = state.settings.technicy.length
+function activeTechnicy() {
+  return state.settings.technicy.length
     ? state.settings.technicy
     : ['Jan Kowalski','Anna Nowak','Piotr Wiśniewski','Tomasz Zając','Marek Kowalczyk'];
+}
 
+function buildTechnikDropdown() {
+  const dd = document.getElementById('technikDropdown');
+  dd.innerHTML = activeTechnicy().map(t =>
+    `<div class="cs-opt" data-val="${t}">${t}</div>`
+  ).join('');
+
+  dd.querySelectorAll('.cs-opt').forEach(opt => {
+    opt.addEventListener('click', e => {
+      e.stopPropagation();
+      selectedTechnik = opt.dataset.val;
+      document.getElementById('technikVal').textContent = selectedTechnik;
+      document.getElementById('technikTrigger').classList.add('chosen');
+      opt.closest('.custom-select').classList.remove('open');
+      dd.querySelectorAll('.cs-opt').forEach(o => o.classList.remove('chosen'));
+      opt.classList.add('chosen');
+      checkSubmitEnabled();
+    });
+  });
+}
+
+function bindTechnikSelect() {
+  const sel = document.getElementById('technikSelect');
+  const trigger = document.getElementById('technikTrigger');
+  trigger.addEventListener('click', e => {
+    e.stopPropagation();
+    sel.classList.toggle('open');
+  });
+}
+
+// ─── AUTOCOMPLETE (urządzenia) ─────────────────────────
+function buildAutocomplete() {
+  const devList = document.getElementById('urzadzeniaList');
   const urzadzenia = state.settings.urzadzenia.length
     ? state.settings.urzadzenia
     : ['LINIA-1','LINIA-2','LINIA-3','MAGAZYN','SERWIS','ZEWNĘTRZNY'];
-
-  techList.innerHTML = technicy.map(t => `<option value="${t}">`).join('');
   devList.innerHTML = urzadzenia.map(u => `<option value="${u}">`).join('');
 }
 
 // ─── FORM ─────────────────────────────────────────────
 function bindForm() {
   const form = document.getElementById('mainForm');
-  const inputs = ['fSN', 'fWho'];
-  inputs.forEach(id => {
-    document.getElementById(id).addEventListener('input', checkSubmitEnabled);
-  });
+  document.getElementById('fSN').addEventListener('input', checkSubmitEnabled);
   form.addEventListener('submit', e => { e.preventDefault(); submitForm(); });
 }
 
 function checkSubmitEnabled() {
-  const ok = state.actions.length > 0 && document.getElementById('fSN').value.trim() && document.getElementById('fWho').value.trim();
+  const ok = state.actions.length > 0 && document.getElementById('fSN').value.trim() && selectedTechnik;
   document.getElementById('btnSubmit').disabled = !ok;
 }
 
 function submitForm() {
   const sn   = document.getElementById('fSN').value.trim();
   const kat  = selectedKat;
-  const kto  = document.getElementById('fWho').value.trim();
+  const kto  = selectedTechnik;
   const dev  = document.getElementById('fDev').value.trim();
   const note = document.getElementById('fNote').value.trim();
 
@@ -230,9 +260,12 @@ function submitForm() {
   // Send to webhook if configured
   if (state.settings.webhook) sendToWebhook(entry);
 
-  // Soft clear (keep technik + urządzenie)
+  // Soft clear (keep urządzenie)
   document.getElementById('fSN').value = '';
   document.getElementById('fNote').value = '';
+  selectedTechnik = '';
+  document.getElementById('technikVal').textContent = '— wybierz —';
+  document.getElementById('technikTrigger').classList.remove('chosen');
   document.getElementById('btnSubmit').disabled = true;
   state.actions = [];
   document.querySelectorAll('.act-btn').forEach(b => b.className = 'act-btn');
@@ -246,9 +279,12 @@ function clearForm() {
   document.querySelectorAll('.act-btn').forEach(b => b.className = 'act-btn');
   document.getElementById('formSelectedAction').innerHTML = '<span class="fsa-label">Wybierz akcję powyżej</span>';
   document.getElementById('formSelectedAction').style.borderBottom = '';
-  ['fSN','fWho','fDev','fNote'].forEach(id => document.getElementById(id).value = '');
+  selectedTechnik = '';
+  ['fSN','fDev','fNote'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('katVal').textContent = '— wybierz —';
   document.getElementById('kaTrigger').classList.remove('chosen');
+  document.getElementById('technikVal').textContent = '— wybierz —';
+  document.getElementById('technikTrigger').classList.remove('chosen');
   document.getElementById('btnSubmit').disabled = true;
   updateDevLabel();
 }
@@ -391,7 +427,7 @@ function saveTechnicy() {
   state.settings.technicy = document.getElementById('sTechnicy').value
     .split('\n').map(s => s.trim()).filter(Boolean);
   saveSettingsToStorage();
-  buildAutocomplete();
+  buildTechnikDropdown();
   toast('Technicy zapisani', 'ok');
 }
 
