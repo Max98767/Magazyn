@@ -20,7 +20,7 @@ const BADGE_CLASS = {
 
 // ─── STATE ────────────────────────────────────────────
 let state = {
-  action: '',
+  actions: [],
   log: [],
   settings: { webhook: '', technicy: [], urzadzenia: [], kategorie: [] }
 };
@@ -77,28 +77,40 @@ function bindNavigation() {
   });
 }
 
+const ACTION_COLOR_MAP = {
+  cyan: '#0099bb', green: '#1a8c4e', red: '#c0392b',
+  orange: '#c05c00', yellow: '#9a7000', purple: '#6934b8'
+};
+
 // ─── ACTION BUTTONS ───────────────────────────────────
 function bindActionButtons() {
   document.querySelectorAll('.act-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const action = btn.dataset.action;
       const color = btn.dataset.color;
-      state.action = action;
+      const idx = state.actions.indexOf(action);
 
-      // Clear previous selection
-      document.querySelectorAll('.act-btn').forEach(b => {
-        b.className = 'act-btn';
-      });
-      btn.classList.add('sel-' + color);
+      if (idx >= 0) {
+        state.actions.splice(idx, 1);
+        btn.className = 'act-btn';
+      } else {
+        state.actions.push(action);
+        btn.classList.add('sel-' + color);
+      }
 
-      // Update form header
       const fsa = document.getElementById('formSelectedAction');
-      const colorMap = {
-        cyan: '#3dd6f5', green: '#3dffa0', red: '#ff4d4d',
-        orange: '#ff8c42', yellow: '#f5e642', purple: '#b06eff'
-      };
-      fsa.innerHTML = `<span class="fsa-action" style="color:${colorMap[color]}">${action}</span>`;
-      fsa.style.borderBottom = `2px solid ${colorMap[color]}20`;
+      if (state.actions.length === 0) {
+        fsa.innerHTML = '<span class="fsa-label">Wybierz akcję powyżej</span>';
+        fsa.style.borderBottom = '';
+      } else {
+        const labels = state.actions.map(a => {
+          const b = document.querySelector(`.act-btn[data-action="${a}"]`);
+          const c = b ? b.dataset.color : 'cyan';
+          return `<span class="fsa-action" style="color:${ACTION_COLOR_MAP[c]}">${a}</span>`;
+        }).join('<span class="fsa-sep"> + </span>');
+        fsa.innerHTML = labels;
+        fsa.style.borderBottom = '';
+      }
 
       checkSubmitEnabled();
     });
@@ -174,7 +186,7 @@ function bindForm() {
 }
 
 function checkSubmitEnabled() {
-  const ok = state.action && document.getElementById('fSN').value.trim() && document.getElementById('fWho').value.trim();
+  const ok = state.actions.length > 0 && document.getElementById('fSN').value.trim() && document.getElementById('fWho').value.trim();
   document.getElementById('btnSubmit').disabled = !ok;
 }
 
@@ -185,12 +197,13 @@ function submitForm() {
   const dev  = document.getElementById('fDev').value.trim();
   const note = document.getElementById('fNote').value.trim();
 
-  if (!state.action || !sn || !kto) { toast('Wypełnij wymagane pola', 'err'); return; }
+  if (!state.actions.length || !sn || !kto) { toast('Wypełnij wymagane pola', 'err'); return; }
 
+  const akcja = state.actions.join(' + ');
   const entry = {
     id: Date.now().toString(36).toUpperCase(),
     ts: nowStr(),
-    akcja: state.action,
+    akcja,
     sn, kat, kto, dev, note
   };
 
@@ -198,7 +211,7 @@ function submitForm() {
   saveLog();
   localStorage.setItem('magsys_lastWho', kto);
 
-  toast(`✓ ${state.action} — ${sn}`, 'ok');
+  toast(`✓ ${akcja} — ${sn}`, 'ok');
   renderRecent();
 
   // Send to webhook if configured
@@ -208,10 +221,14 @@ function submitForm() {
   document.getElementById('fSN').value = '';
   document.getElementById('fNote').value = '';
   document.getElementById('btnSubmit').disabled = true;
+  state.actions = [];
+  document.querySelectorAll('.act-btn').forEach(b => b.className = 'act-btn');
+  document.getElementById('formSelectedAction').innerHTML = '<span class="fsa-label">Wybierz akcję powyżej</span>';
+  document.getElementById('formSelectedAction').style.borderBottom = '';
 }
 
 function clearForm() {
-  state.action = '';
+  state.actions = [];
   selectedKat = '';
   document.querySelectorAll('.act-btn').forEach(b => b.className = 'act-btn');
   document.getElementById('formSelectedAction').innerHTML = '<span class="fsa-label">Wybierz akcję powyżej</span>';
@@ -220,6 +237,13 @@ function clearForm() {
   document.getElementById('katVal').textContent = '— wybierz —';
   document.getElementById('kaTrigger').classList.remove('chosen');
   document.getElementById('btnSubmit').disabled = true;
+}
+
+// ─── BADGES ───────────────────────────────────────────
+function renderBadges(akcja) {
+  return akcja.split(' + ').map(a =>
+    `<span class="badge ${BADGE_CLASS[a] || ''}">${a}</span>`
+  ).join(' ');
 }
 
 // ─── RECENT LIST ──────────────────────────────────────
@@ -231,7 +255,7 @@ function renderRecent() {
   list.innerHTML = recent.map(r => `
     <div class="recent-item">
       <span class="ri-time">${r.ts.slice(11,16)}</span>
-      <span class="badge ${BADGE_CLASS[r.akcja] || ''}">${r.akcja}</span>
+      ${renderBadges(r.akcja)}
       <span class="ri-sn">${r.sn}</span>
       <span class="ri-who">${r.kto}</span>
       <span class="ri-dev">${r.dev || '—'}</span>
@@ -257,7 +281,7 @@ function renderHistory() {
 
   const filtered = state.log.filter(r => {
     const text = [r.sn, r.kto, r.dev, r.kat, r.note, r.akcja].join(' ').toLowerCase();
-    return text.includes(q) && (!fa || r.akcja === fa) && (!fk || r.kat === fk);
+    return text.includes(q) && (!fa || r.akcja.includes(fa)) && (!fk || r.kat === fk);
   });
 
   document.getElementById('histCount').textContent =
@@ -266,7 +290,7 @@ function renderHistory() {
   document.getElementById('histBody').innerHTML = filtered.map(r => `
     <tr>
       <td class="td-time">${r.ts}</td>
-      <td><span class="badge ${BADGE_CLASS[r.akcja] || ''}">${r.akcja}</span></td>
+      <td>${renderBadges(r.akcja)}</td>
       <td class="td-sn">${r.sn}</td>
       <td>${r.kat || '—'}</td>
       <td class="td-who">${r.kto}</td>
@@ -292,9 +316,10 @@ function renderStock() {
   Object.entries(snState).forEach(([sn, st]) => {
     const k = snKat[sn] || 'Inne';
     if (!cats[k]) cats[k] = { stock: 0, inDev: 0, broken: 0 };
-    if (['PRZYJĘCIE','ZWROT'].includes(st)) cats[k].stock++;
-    else if (['POBIERZ','WYMIANA'].includes(st)) cats[k].inDev++;
-    else if (st === 'ZEPSUTA') cats[k].broken++;
+    const parts = st.split(' + ');
+    if (parts.includes('ZEPSUTA')) cats[k].broken++;
+    else if (parts.some(a => ['POBIERZ','WYMIANA'].includes(a))) cats[k].inDev++;
+    else cats[k].stock++;
   });
 
   const tot = Object.values(cats).reduce((a, c) => ({

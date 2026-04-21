@@ -298,6 +298,7 @@ textarea { resize: vertical; line-height: 1.6; }
   letter-spacing: 0.04em;
   padding: 3px 8px; border-radius: 4px; white-space: nowrap; display: inline-block;
 }
+.badge + .badge { margin-left: 4px; }
 .b-pobierz  { background: rgba(0,119,168,0.1);   color: var(--cyan); }
 .b-zwrot    { background: rgba(26,140,78,0.1);    color: var(--green); }
 .b-zepsuta  { background: rgba(192,57,43,0.1);    color: var(--red); }
