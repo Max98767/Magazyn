@@ -22,7 +22,7 @@ const BADGE_CLASS = {
 let state = {
   action: '',
   log: [],
-  settings: { webhook: '', technicy: [], urzadzenia: [] }
+  settings: { webhook: '', technicy: [], urzadzenia: [], kategorie: [] }
 };
 
 // ─── INIT ─────────────────────────────────────────────
@@ -108,9 +108,13 @@ function bindActionButtons() {
 // ─── CUSTOM SELECT (Kategoria) ─────────────────────────
 let selectedKat = '';
 
+function activeKategorie() {
+  return state.settings.kategorie.length ? state.settings.kategorie : KATEGORIE;
+}
+
 function buildKatDropdown() {
   const dd = document.getElementById('katDropdown');
-  dd.innerHTML = KATEGORIE.map(k =>
+  dd.innerHTML = activeKategorie().map(k =>
     `<div class="cs-opt" data-val="${k}">${k}</div>`
   ).join('');
 
@@ -240,7 +244,7 @@ function renderHistory() {
   // Update category filter
   const katSel = document.getElementById('filterKat');
   if (katSel.options.length <= 1) {
-    KATEGORIE.forEach(k => {
+    activeKategorie().forEach(k => {
       const o = document.createElement('option');
       o.value = k; o.textContent = k;
       katSel.appendChild(o);
@@ -282,7 +286,7 @@ function renderStock() {
   });
 
   const cats = {};
-  KATEGORIE.forEach(k => { cats[k] = { stock: 0, inDev: 0, broken: 0 }; });
+  activeKategorie().forEach(k => { cats[k] = { stock: 0, inDev: 0, broken: 0 }; });
   cats['Inne'] = cats['Inne'] || { stock: 0, inDev: 0, broken: 0 };
 
   Object.entries(snState).forEach(([sn, st]) => {
@@ -334,6 +338,7 @@ function loadSettingsUI() {
   document.getElementById('sWebhook').value = state.settings.webhook || '';
   document.getElementById('sTechnicy').value = state.settings.technicy.join('\n');
   document.getElementById('sUrzadzenia').value = state.settings.urzadzenia.join('\n');
+  document.getElementById('sKategorie').value = activeKategorie().join('\n');
 }
 
 function saveSettings() {
@@ -357,6 +362,14 @@ function saveUrzadzenia() {
   saveSettingsToStorage();
   buildAutocomplete();
   toast('Urządzenia zapisane', 'ok');
+}
+
+function saveKategorie() {
+  state.settings.kategorie = document.getElementById('sKategorie').value
+    .split('\n').map(s => s.trim()).filter(Boolean);
+  saveSettingsToStorage();
+  buildKatDropdown();
+  toast('Kategorie zapisane', 'ok');
 }
 
 function updateSyncStatus() {
