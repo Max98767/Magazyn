@@ -112,9 +112,29 @@ function bindActionButtons() {
         fsa.style.borderBottom = '';
       }
 
+      updateDevLabel();
       checkSubmitEnabled();
     });
   });
+}
+
+function updateDevLabel() {
+  const label = document.getElementById('fDevLabel');
+  const input = document.getElementById('fDev');
+  const parkometActions = ['POBIERZ','ZWROT','ZEPSUTA','WYMIANA'];
+  const hasParkometr = state.actions.some(a => parkometActions.includes(a));
+  const hasPrzyjecie = state.actions.includes('PRZYJĘCIE');
+
+  if (hasParkometr) {
+    label.textContent = 'NUMER PARKOMATU';
+    input.placeholder = 'np. PKM-042';
+  } else if (hasPrzyjecie) {
+    label.textContent = 'LOKALIZACJA';
+    input.placeholder = 'np. MAGAZYN';
+  } else {
+    label.textContent = 'URZĄDZENIE / LOKALIZACJA';
+    input.placeholder = 'np. LINIA-3 lub MAGAZYN';
+  }
 }
 
 // ─── CUSTOM SELECT (Kategoria) ─────────────────────────
@@ -237,6 +257,7 @@ function clearForm() {
   document.getElementById('katVal').textContent = '— wybierz —';
   document.getElementById('kaTrigger').classList.remove('chosen');
   document.getElementById('btnSubmit').disabled = true;
+  updateDevLabel();
 }
 
 // ─── BADGES ───────────────────────────────────────────
